@@ -1,9 +1,11 @@
-/*//Run jQuery after the document is fully loaded.
+//Run jQuery after the document is fully loaded.
+
 $(document).ready(
     //The function that does the stuff.
+    $('#show').click(
     function () {
         //Make the AJAX call
-        $.ajax('http://api.tvmaze.com/singlesearch/shows?q=the+magicians&embed=episodes', {
+        $.ajax('http://api.tvmaze.com/singlesearch/shows?q='+ $(this).text() +'&embed=episodes', {
             method: "GET",
             dataType: "json"
         })
@@ -11,8 +13,12 @@ $(document).ready(
             .done(
                 function (data) {
                     //Add the name
-                    $('#name').append(data.name);
+                    $('#name').html(data.name);
                     //Add the episodes
+                    $('#episode').show();
+                    $('#show').hide();
+                    $('#shows').hide();
+
                     data._embedded.episodes.forEach(function (episode) {
                         $('#episodeList').append('<tr>'+
                             '<td>' + episode.season + '</td>' +
@@ -23,13 +29,14 @@ $(document).ready(
             })
         })
     }
-);*/
+    )
+);
 
 $(document).ready(
     $('button').click(
         function () {
             //Make the AJAX call
-            $.ajax('http://api.tvmaze.com/singlesearch/shows?q=' + $('input').val(), {
+            $.ajax('http://api.tvmaze.com/search/shows?q=' + $('input').val(), {
                 method: "GET",
                 dataType: "json"
             })
@@ -37,17 +44,28 @@ $(document).ready(
                 .done(
                     function (data) {
                         //Add the name
-                        $('#name').html(data.name);
+                        //$('#name').html(data.name);
                         //Add the episodes
-                       // data.forEach(function (episode) {
-                            $('#episodeList').html('<tr>'+
-                                '<td><a href="' + data.officialSite + '"><img src="' + data.image.medium + '"></a></td>' +
-                                '<td>' + data.rating.average + '</td>' +
-                                '<td>' + data.runtime + '</td>' +
-                                '<td>' + data.summary + '</td>' +
+                        $('#show').show();
+                        $('#episode').hide();
+                        $('#episodeList').hide();
+                        $('#shows').empty();
+
+                       data.forEach(function (episode) {
+                            $('#shows').append('<tr>'+
+                                '<td><a href="' + episode.show.officialSite + '"><img src="' + episode.show.image.medium + '"></a></td>' +
+                                '<td>' + episode.show.name + '</td>' +
+                                '<td>' + episode.show.rating.average + '</td>' +
+                                '<td>' + episode.show.runtime + '</td>' +
+                                '<td>' + episode.show.summary + '</td>' +
                                 +' </tr>')
-                        //})
+                        })
                     })
         }
     )
 );
+
+$(document).ready(function () {
+    $('#show').hide();
+    $('#episode').hide();
+});
